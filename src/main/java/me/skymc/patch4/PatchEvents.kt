@@ -1,13 +1,17 @@
 package me.skymc.patch4
 
 import io.izzel.taboolib.cronus.CronusUtils
+import io.izzel.taboolib.internal.xseries.XSound
 import io.izzel.taboolib.kotlin.Reflex
 import io.izzel.taboolib.kotlin.Tasks
 import io.izzel.taboolib.module.inject.PlayerContainer
 import io.izzel.taboolib.module.inject.TListener
+import io.izzel.taboolib.module.inject.TSchedule
 import io.izzel.taboolib.module.packet.Packet
 import io.izzel.taboolib.module.packet.TPacket
+import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -28,18 +32,30 @@ object PatchEvents : Listener {
 
     @TPacket(type = TPacket.Type.SEND)
     fun e(player: Player, packet: Packet): Boolean {
-        if (packet.any("PacketPlayOutEntityVelocity") && packet.read("a", 0) == bite[player.name]) {
+        if (packet.equals("PacketPlayOutEntityVelocity") && packet.read("a", 0) == bite[player.name]) {
             return false
         }
-        if (packet.any("PacketPlayOutEntityMetadata") && packet.read("a", 0) == bite[player.name]) {
+        if (packet.equals("PacketPlayOutEntityMetadata") && packet.read("a", 0) == bite[player.name]) {
             return false
         }
-        if (packet.any("PacketPlayOutEntityStatus") && packet.read("a", 0) == bite[player.name]) {
+        if (packet.equals("PacketPlayOutEntityStatus") && packet.read("a", 0) == bite[player.name]) {
             return false
         }
-        if (packet.any("PacketPlayOutEntityEffect") && packet.read("a", 0) == bite[player.name]) {
+        if (packet.equals("PacketPlayOutEntityEffect") && packet.read("a", 0) == bite[player.name]) {
             return false
         }
+//        if (packet.equals("PacketPlayOutNamedSoundEffect") && bite.containsKey(player.name)) {
+//            val sound = Reflex.of(packet.read("a")).read<Any>("b")
+//            if (sound == "minecraft:entity.bobber.slash" || sound == "minecraft:entity.fishing_bobber.flash") {
+//                val x = packet.read("c", 0).toDouble()
+//                val y = packet.read("d", 0).toDouble()
+//                val z = packet.read("e", 0).toDouble()
+//                val volume = packet.read("f", 0f)
+//                val pitch = packet.read("g", 0f)
+//                player.playSound(Location(player.world, x, y, z), Sound.ENTITY_BLAZE_DEATH, volume, pitch)
+//                return false
+//            }
+//        }
         return true
     }
 
@@ -60,6 +76,13 @@ object PatchEvents : Listener {
             Tasks.delay(40) {
                 bite.remove(e.player.name)
             }
+        }
+    }
+
+    @TSchedule(period = 20)
+    fun e() {
+        hook.values.forEach {
+            XSound.ENTITY_FISHING_BOBBER_SPLASH.play(it.location, 0f, 0f)
         }
     }
 }
