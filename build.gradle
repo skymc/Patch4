@@ -4,7 +4,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.0'
 }
 
-group = 'io.izzel.taboolib.example'
+group = 'me.skymc.patch4'
 version = '1.0.0'
 
 sourceCompatibility = '1.8'
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    compile 'ink.ptms.core:v11600:11600:all'
+    compile 'ink.ptms.core:v11200:11200:all'
     compile 'org.jetbrains.kotlin:kotlin-stdlib'
     compileOnly fileTree(dir: 'libs', includes: ['*.jar'])
 }
